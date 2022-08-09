@@ -1,0 +1,5 @@
+matplotlib
+pyowm
+psycopg2-binary
+streamlit
+typer

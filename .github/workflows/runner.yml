@@ -1,0 +1,19 @@
+name: Precipitation scraper
+on:
+  schedule:
+    - cron: '22 * * * *'
+
+jobs:
+  get_precipitation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+      - name: Setup Python 3.10
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.10"
+      - run: |
+          pip install -r requirements.txt
+          python commands.py --connection-uri=${{ secrets.CONNECTION_URI }} --api-key=${{ secrets.API_KEY }} --zip-code=${{ secrets.ZIP_CODE }}
