@@ -31,24 +31,18 @@ def get_latest_precipitation_data(
     cur.execute(
         """
         SELECT zip_code, observation_timestamp, precipitation_mms FROM precipitation
-        WHERE observation_timestamp <=
+        WHERE observation_timestamp =
         ( SELECT MAX(observation_timestamp)
         FROM precipitation
         WHERE zip_code = %s
         AND observation_timestamp <= %s
         AND precipitation_mms > 0
         )
-        AND observation_timestamp >=
-        ( SELECT MAX(observation_timestamp)
-        FROM precipitation
-        WHERE zip_code = %s
-        AND observation_timestamp <= %s
-        AND precipitation_mms > 0
-        ) - INTERVAL '3 DAYS'
         """,
-        (zip_code, from_date, zip_code, from_date),
+        (zip_code, from_date),
     )
     last_rain_data = cur.fetchall()
+    conn.close()
     column_names = ["zip_code", "observation_timestamp", "precipitation_mms"]
     return pd.DataFrame(last_rain_data, columns=column_names)
 
@@ -70,10 +64,12 @@ def get_last_30_days(
         """
         SELECT zip_code, observation_timestamp, precipitation_mms FROM precipitation
         WHERE observation_timestamp >= NOW() - INTERVAL '30 DAYS'
+        AND zip_code = %s
         """,
-        (zip_code, zip_code),
+        (zip_code,),
     )
     last_rain_data = cur.fetchall()
+    conn.close()
     column_names = ["zip_code", "observation_timestamp", "precipitation_mms"]
     return pd.DataFrame(last_rain_data, columns=column_names)
 
@@ -94,12 +90,25 @@ col2.metric("Last Rain (millimeters)", last_rain_mms)
 
 last_thirty_days["24h_sum"] = last_thirty_days["precipitation_mms"].rolling(24, min_periods=1).sum()
 # last 30 days of rain
-fig, ax = plt.subplots(figsize=(12, 6))
+fig, ax = plt.subplots(figsize=(8, 4))
 ax.set_title(f"Last 30 days of rain in zip code {ZIP_CODE}")
-ax.plot(
-    last_thirty_days["observation_timestamp"], last_thirty_days["precipitation_mms"], label="Precipitation in last hour"
+ax.bar(
+    last_thirty_days["observation_timestamp"],
+    last_thirty_days["precipitation_mms"],
+    width=0.25,
+    label="Precipitation in last hour",
+    color=["#fb8500"] * len(last_thirty_days),
 )
-ax.plot(last_thirty_days["observation_timestamp"], last_thirty_days["24h_sum"], label="24h sum (mm)")
+ax.plot(last_thirty_days["observation_timestamp"], last_thirty_days["24h_sum"], label="24h sum (mm)", color="#023e8a")
+ax.bar(
+    last_thirty_days.loc[last_thirty_days["observation_timestamp"] == last_rain_date, "observation_timestamp"],
+    last_thirty_days.loc[last_thirty_days["observation_timestamp"] == last_rain_date, "precipitation_mms"],
+    width=0.25,
+    label="Last rain event since'from_date'",
+    color=["#fb8500"],
+    hatch="//",
+)
+# ax.vlines(last_rain_date, 0, -0.5, linestyles="dashed", label="Last rain", color="red")
 locator = mdates.AutoDateLocator(minticks=3, maxticks=30)
 formatter = mdates.ConciseDateFormatter(locator)
 ax.xaxis.set_major_locator(locator)

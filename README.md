@@ -7,7 +7,8 @@ Weather data is obtained via the [OpenWeather API](https://home.openweathermap.o
 
 ## How to track precipitation for your hometown
 
-1. Create a (free) account on [OpenWeather](https://openweathermap.org)
+1. Create a (free) account on [OpenWeather](https://openweathermap.org)  
+    Remember the API key, you'll need to paste it later.
 
 2. [Fork](https://github.com/arvkevi/hometown_precipitation/fork) the repo and clone it
 
@@ -52,3 +53,16 @@ Weather data is obtained via the [OpenWeather API](https://home.openweathermap.o
             `ZIP_CODE = YOUR_ZIP_CODE`
 
 Visit the app and keep track of rain events :)
+
+# Recreate the example locally
+
+Run the `create_example.ipynb` notebook to generate example data.
+
+```shell
+cd hometown_precipitation
+export ZIP_CODE=10001
+export CONNECTION_URI=postgres://{user}:{password}@{hostname}:{port}/{database-name}
+streamlit run app.py
+```
+
+Enter the following into your browser: `localhost:5000`
