@@ -1,14 +1,16 @@
 # Hometown Precipitation
 
-This repo records the hourly precipitation for a given zip code and displays the last precipitation event as of a given date.
+This repo records the hourly precipitation for a given zip code and displays the last precipitation event as of a given date. It uses GitHub Actions to run a script every hour that writes precipitation accumulation for the last hour to a database. Precipitation data is obtained via the [OpenWeather API](https://home.openweathermap.org/).
 
-Weather data is obtained via the [OpenWeather API](https://home.openweathermap.org/api_keys) It uses GitHub Actions to run the script every hour. 
+An example of the app is shown below on simulated data:
+
+![](images/screenshot.png)
 
 
 ## How to track precipitation for your hometown
 
 1. Create a (free) account on [OpenWeather](https://openweathermap.org)  
-    Remember the API key, you'll need to paste it later.
+    Remember the [API key](https://openweathermap.org/api_keys), you'll need to paste it later.
 
 2. [Fork](https://github.com/arvkevi/hometown_precipitation/fork) the repo and clone it
 
