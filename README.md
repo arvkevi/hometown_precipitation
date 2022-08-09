@@ -7,14 +7,16 @@ Weather data is obtained via the [OpenWeather API](https://home.openweathermap.o
 
 ## How to track precipitation for your hometown
 
-1. [Fork](https://github.com/arvkevi/hometown_precipitation/fork) the repo and clone it
+1. Create a (free) account on [OpenWeather](https://openweathermap.org)
+
+2. [Fork](https://github.com/arvkevi/hometown_precipitation/fork) the repo and clone it
 
     ```shell
     git clone git@github.com:[your_username]/hometown_precipitation.git
     cd hometown_precipitation
     ```
 
-2. Use `create_table.sql` to create a table in an existing PostgreSQL database.
+3. Use `create_table.sql` to create a table in an existing PostgreSQL database.
 
     I used a free teir plan at [Elephantsql](https://www.elephantsql.com/) to create a database.  
 
@@ -23,7 +25,7 @@ Weather data is obtained via the [OpenWeather API](https://home.openweathermap.o
     psql $DATABASE_URL < sql/create_table.sql
     ```
 
-3. Create secrets for Github Actions
+4. Create secrets for Github Actions
 
     From your forked repo's homepage, go to settings, then secrets, then actions.  
     
@@ -37,15 +39,16 @@ Weather data is obtained via the [OpenWeather API](https://home.openweathermap.o
     The `API_KEY` value is the API key for the OpenWeather API.
     The `ZIP_CODE` value is the zip code for your hometown.
 
-4. Host the streamlit app:
+5. Host the streamlit app:
 `
-    I used [streamlit share](https://share.streamlit.io/).  
-    a. Click new app
-    b. Enter the name of your `username/repo`
-    c. Change the Main file path to `app.py`
-    d. Click "Advanced Settings"
-     Add:
-       `CONNECTION_URI = $DATABASE_URL`
-       `ZIP_CODE = YOUR_ZIP_CODE`
+    I used [streamlit share](https://share.streamlit.io/). 
+
+        a. Click new app  
+        b. Enter the name of your `username/repo`  
+        c. Change the Main file path to `app.py`  
+        d. Click "Advanced Settings"  
+            Add:
+            `CONNECTION_URI = $DATABASE_URL`
+            `ZIP_CODE = YOUR_ZIP_CODE`
 
 Visit the app and keep track of rain events :)
