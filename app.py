@@ -76,6 +76,8 @@ def get_last_30_days(
 
 st.title(f"When did it last rain in zip code {ZIP_CODE}?")
 from_date = st.date_input("From which date? Choose:", value=datetime.datetime.now())
+# include the hours of the day on the from_date (for example, today...)
+from_date = from_date + datetime.timedelta(hours=23, minutes=59, seconds=59)
 data = get_latest_precipitation_data(CONNECTION_URI, ZIP_CODE, from_date)
 last_thirty_days = get_last_30_days(CONNECTION_URI, ZIP_CODE)
 
