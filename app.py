@@ -7,8 +7,12 @@ import pandas as pd
 import psycopg2
 import streamlit as st
 
+from pyzipcode import ZipCodeDatabase
+
 CONNECTION_URI = os.environ.get("CONNECTION_URI")
 ZIP_CODE = os.environ.get("ZIP_CODE")
+
+utc_offset = ZipCodeDatabase()[int(ZIP_CODE)].timezone
 
 st.set_page_config(page_title="Last time it rained?", page_icon="rain", layout="wide")
 
@@ -79,7 +83,16 @@ from_date = st.date_input("From which date? Choose:", value=datetime.datetime.no
 # include the hours of the day on the from_date (for example, today...)
 from_date = from_date + datetime.timedelta(hours=23, minutes=59, seconds=59)
 data = get_latest_precipitation_data(CONNECTION_URI, ZIP_CODE, from_date)
+# convert to local tz
+data["observation_timestamp"] = data["observation_timestamp"].apply(
+    lambda row: row + datetime.timedelta(hours=utc_offset)
+)
 last_thirty_days = get_last_30_days(CONNECTION_URI, ZIP_CODE)
+# convert to local tz
+last_thirty_days["observation_timestamp"] = last_thirty_days["observation_timestamp"].apply(
+    lambda row: row + datetime.timedelta(hours=utc_offset)
+)
+
 
 last_rain_date = data["observation_timestamp"].max()
 last_rain_mms = data.loc[
@@ -87,7 +100,7 @@ last_rain_mms = data.loc[
 ].item()
 
 col1, col2 = st.columns(2)
-col1.metric("Last Rain Date", last_rain_date.strftime("%Y-%m-%d @ %H:%M"))
+col1.metric("Last Rain Date (local time)", last_rain_date.strftime("%Y-%m-%d @ %H:%M"))
 col2.metric("Last Rain (millimeters)", last_rain_mms)
 
 last_thirty_days["24h_sum"] = last_thirty_days["precipitation_mms"].rolling(24, min_periods=1).sum()
